@@ -8,10 +8,12 @@ from openai import OpenAI
 st.set_page_config(page_title="CIMPAR Inventory Assistant", layout="wide")
 
 api_key = st.secrets["OPENAI_API_KEY"]
-# Check if key exists
-if not api_key:
-    st.error("❌ OpenAI API key not found. Please set it in your .env file as OPENAI_API_KEY.")
-    st.stop()
+
+# Set default key globally
+OpenAI.api_key = api_key
+
+# Then initialize the client
+client = OpenAI()
 
 # Init OpenAI client
 client = OpenAI(api_key=api_key)
