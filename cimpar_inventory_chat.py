@@ -1,20 +1,13 @@
 # cimpar_inventory_chat.py
 
-from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
-import os
 
 # Set Streamlit page config
 st.set_page_config(page_title="CIMPAR Inventory Assistant", layout="wide")
 
-# Load environment variables from .env
-load_dotenv()
-
-# Correct key casing (ensure your .env uses OPENAI_API_KEY=...)
-api_key = os.getenv("OPENAI_API_KEY")
-
+api_key = st.secrets["OPENAI_API_KEY"]
 # Check if key exists
 if not api_key:
     st.error("❌ OpenAI API key not found. Please set it in your .env file as OPENAI_API_KEY.")
