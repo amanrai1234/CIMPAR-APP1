@@ -18,7 +18,7 @@ if not api_key:
     st.stop()
 
 # Initialize OpenAI client
-client = OpenAI(api_key=api_key)
+openai.api_key = api_key
 
 # Load and flatten Excel data
 @st.cache_resource
@@ -64,7 +64,7 @@ if query:
 
     with st.spinner("Thinking..."):
         try:
-            response = client.chat.completions.create(
+            response = openai.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": (
