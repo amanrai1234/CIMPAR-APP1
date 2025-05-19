@@ -1,23 +1,26 @@
 # cimpar_inventory_chat.py
 
+import openai
 import streamlit as st
 import pandas as pd
+import os
 from openai import OpenAI
+from dotenv import load_dotenv
 
 # Set Streamlit page config
 st.set_page_config(page_title="CIMPAR Inventory Assistant", layout="wide")
 
-api_key = st.secrets["OPENAI_API_KEY"]
+# Load API key from secrets.toml
+api_key = st.secrets["OPENAI"]["api_key"]
 
-# Set default key globally
-OpenAI.api_key = api_key
+if not api_key:
+    st.error("❌ OpenAI API key not found.")
+    st.stop()
 
-# Then initialize the client
+# Initialize OpenAI client
+client = OpenAI(api_key=api_key)
 
-# Init OpenAI client
-client = OpenAI()
-
-# Load Excel data and flatten all sheets
+# Load and flatten Excel data
 @st.cache_resource
 def load_inventory(file_path: str) -> str:
     try:
@@ -31,7 +34,7 @@ def load_inventory(file_path: str) -> str:
         st.error(f"❌ Failed to load Excel file: {e}")
         return ""
 
-# Load inventory data
+# Path to inventory Excel file
 file_path = "inventroy.xlsx"
 all_data = load_inventory(file_path)
 
@@ -41,19 +44,19 @@ st.markdown("<h1 style='text-align: left; margin-bottom: 0;'>🔷 CIMPAR Invento
 st.markdown("<h4 style='margin-top: 0;'>Ask any question about your inventory Excel file.</h4>", unsafe_allow_html=True)
 st.info("This AI assistant reads your Excel inventory and answers questions with full row context.")
 
-# Initialize chat history
+# Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# User input
+# User query input
 query = st.chat_input("Ask about the inventory...")
 
-# Display past chat
+# Display chat history
 for role, content in st.session_state.chat_history:
     with st.chat_message(role):
         st.markdown(content)
 
-# On user submit
+# Process query
 if query:
     st.session_state.chat_history.append(("user", query))
     with st.chat_message("user"):
@@ -62,7 +65,7 @@ if query:
     with st.spinner("Thinking..."):
         try:
             response = client.chat.completions.create(
-                model="gpt-4.1-mini",  # or "gpt-3.5-turbo" if using older key
+                model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": (
                         "You are an IT assistant. Use the provided inventory data to answer questions. "
@@ -79,7 +82,7 @@ if query:
                     {"role": "user", "content": query}
                 ]
             )
-            answer = response.choices[0].message.content
+            answer = response.choices[0].message.content  # ✅ Corrected here
         except Exception as e:
             answer = f"❌ OpenAI API call failed: {e}"
 
