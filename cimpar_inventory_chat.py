@@ -1,14 +1,22 @@
 #cimpar_inventory_chat.py
-
+from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
+import os
 
 # Set Streamlit page config
 st.set_page_config(page_title="CIMPAR Inventory Assistant", layout="wide")
 
 # Init OpenAI client
-client = OpenAI(api_key="REDACTED")
+# Load environment variables from .env
+load_dotenv()
+
+# Get the key securely
+api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=api_key)
+
 
 # Load Excel data once and flatten
 @st.cache_resource
