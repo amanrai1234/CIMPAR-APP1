@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="CIMPAR Inventory Assistant", layout="wide")
 
 # Load API key from secrets.toml
-api_key = st.secrets["OPENAI"]["api_key"]
+api_key = st.secrets["OPENAI_API_KEY"]
 
 if not api_key:
     st.error("❌ OpenAI API key not found.")
